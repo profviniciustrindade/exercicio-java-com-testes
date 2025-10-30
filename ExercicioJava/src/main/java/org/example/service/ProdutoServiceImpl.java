@@ -12,8 +12,12 @@ public class ProdutoServiceImpl implements ProdutoService{
 
     @Override
     public Produto cadastrarProduto(Produto produto) throws SQLException {
-        produtoRepository.save(produto);
-        return produto;
+
+            if (produto.getPreco() < 0) {
+                throw new IllegalArgumentException("Preço deve ser positivo.");
+            } else {
+                return produtoRepository.save(produto);
+            }
     }
 
     @Override
@@ -29,11 +33,28 @@ public class ProdutoServiceImpl implements ProdutoService{
 
     @Override
     public Produto atualizarProduto(Produto produto, int id) throws SQLException {
-        return produtoRepository.update(produto);
+        return produtoRepository.update(produto, id);
     }
 
     @Override
-    public boolean excluirProduto(int id) {
-        return false;
+    public boolean excluirProduto(int id) throws SQLException {
+
+        boolean existe = false;
+
+        List<Produto> produtos  = produtoRepository.findAll();
+        produtoRepository.deleteById(id);
+
+       for (Produto p : produtos ){
+
+           if (p.getId() == id ){
+               existe = true;
+           } else {
+               existe = false;
+           }
+
+        };
+
+        return existe;
     }
+
 }
