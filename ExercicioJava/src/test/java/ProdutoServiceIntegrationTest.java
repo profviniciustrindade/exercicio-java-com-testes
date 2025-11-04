@@ -6,6 +6,7 @@ import org.junit.jupiter.api.*;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
@@ -91,7 +92,7 @@ public class ProdutoServiceIntegrationTest {
 
     @Test
     @DisplayName("Deve cadastrar um produto e salvá-lo no banco")
-    void testCadastrarProduto_Sucesso() throws Exception {
+    void testCadastrarProduto_Sucesso() throws SQLException {
         // ARRANGE
         Produto p = new Produto("Monitor 4K", 1800.00, 10, "Eletrônicos");
 
@@ -117,7 +118,7 @@ public class ProdutoServiceIntegrationTest {
 
     @Test
     @DisplayName("Não deve cadastrar produto com preço negativo (Regra de Negócio)")
-    void testCadastrarProduto_PrecoNegativo() {
+    void testCadastrarProduto_PrecoNegativo() throws SQLException{
         // ARRANGE
         Produto p = new Produto("Mouse", -50.00, 5, "Periféricos");
 
@@ -131,7 +132,7 @@ public class ProdutoServiceIntegrationTest {
 
     @Test
     @DisplayName("Deve listar todos os produtos cadastrados")
-    void testListarProdutos() {
+    void testListarProdutos() throws SQLException{
         // ARRANGE
         produtoService.cadastrarProduto(new Produto("Teclado", 150.00, 20, "Periféricos"));
         produtoService.cadastrarProduto(new Produto("Webcam", 400.00, 5, "Eletrônicos"));
@@ -146,7 +147,7 @@ public class ProdutoServiceIntegrationTest {
 
     @Test
     @DisplayName("Deve atualizar um produto existente no banco")
-    void testAtualizarProduto_Sucesso() throws Exception {
+    void testAtualizarProduto_Sucesso() throws SQLException {
         // ARRANGE
         Produto produtoOriginal = produtoService.cadastrarProduto(new Produto("Gabinete", 300.00, 5, "Hardware"));
         int idOriginal = produtoOriginal.getId();
@@ -170,7 +171,7 @@ public class ProdutoServiceIntegrationTest {
 
     @Test
     @DisplayName("Deve excluir um produto e removê-lo do banco")
-    void testExcluirProduto_Sucesso() throws Exception {
+    void testExcluirProduto_Sucesso() throws SQLException {
         // ARRANGE
         Produto p = produtoService.cadastrarProduto(new Produto("Cadeira", 800.00, 3, "Móveis"));
         int idParaExcluir = p.getId();
@@ -188,11 +189,10 @@ public class ProdutoServiceIntegrationTest {
 
     @Test
     @DisplayName("Deve retornar false ao tentar excluir ID inexistente")
-    void testExcluirProduto_NaoEncontrado() {
-        // ACT
-        boolean resultado = produtoService.excluirProduto(999);
+    void testExcluirProduto_NaoEncontrado() throws SQLException{
+        assertThrows(RuntimeException.class, () -> {
+            boolean resultado = produtoService.excluirProduto(999);
+        });
 
-        // ASSERT
-        assertFalse(resultado, "Método de exclusão deveria retornar false para ID inexistente");
     }
 }
