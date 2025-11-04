@@ -30,7 +30,8 @@ public class ProdutoServiceImpl implements ProdutoService{
 
     @Override
     public Produto atualizarProduto(Produto produto, int id) throws SQLException {
-        return produtoRepository.update(produto, id);
+        produto.setId(buscarPorId(id).getId());
+        return produtoRepository.update(produto);
     }
 
     @Override

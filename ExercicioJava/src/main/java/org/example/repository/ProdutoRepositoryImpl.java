@@ -76,7 +76,7 @@ public class ProdutoRepositoryImpl implements ProdutoRepository{
     }
 
     @Override
-    public Produto update(Produto produto, int id) throws SQLException {
+    public Produto update(Produto produto) throws SQLException {
         String query = "UPDATE produto SET nome = ?, preco = ?, quantidade = ?, categoria = ? WHERE id = ?";
 
         try(Connection conn = ConexaoBanco.conectar();
@@ -86,7 +86,7 @@ public class ProdutoRepositoryImpl implements ProdutoRepository{
             stmt.setDouble(2, produto.getPreco());
             stmt.setInt(3, produto.getQuantidade());
             stmt.setString(4, produto.getCategoria());
-            stmt.setInt(5, id);
+            stmt.setInt(5, produto.getId());
             stmt.executeUpdate();
 
             return produto;
