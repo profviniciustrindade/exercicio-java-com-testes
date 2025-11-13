@@ -2,16 +2,18 @@ package org.example.repository;
 
 import org.example.model.Produto;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public interface ProdutoRepository {
-    Produto save(Produto produto);
 
-    List<Produto> findAll();
+    Produto save(Produto produto) throws SQLException;
 
-    Produto findById();
+    List<Produto> findAll() throws SQLException;
 
-    Produto update(Produto produto);
+    Produto findById(int id) throws SQLException;
 
-    void deleteById(int id);
+    Produto update(Produto produto, int idOriginal) throws SQLException;
+
+    void deleteById(int id) throws SQLException;
 }
