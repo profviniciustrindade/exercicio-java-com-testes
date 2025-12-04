@@ -7,9 +7,9 @@ import org.example.repository.ProdutoRepositoryImpl;
 import java.sql.SQLException;
 import java.util.List;
 
-public class ProdutoServiceImpl implements ProdutoService{
+public class ProdutoServiceImpl implements ProdutoService {
 
-    ProdutoRepository repository = new ProdutoRepositoryImpl();
+    ProdutoRepository produtoRepository = new ProdutoRepositoryImpl();
 
     @Override
     public Produto cadastrarProduto(Produto produto) throws SQLException {
@@ -18,12 +18,12 @@ public class ProdutoServiceImpl implements ProdutoService{
             throw new IllegalArgumentException("Preço deve ser positivo.");
         }
 
-        return repository.save(produto);
+        return produtoRepository.save(produto);
     }
 
     @Override
     public List<Produto> listarProdutos() throws SQLException {
-        return repository.findAll();
+        return produtoRepository.findAll();
     }
 
     @Override
@@ -34,18 +34,8 @@ public class ProdutoServiceImpl implements ProdutoService{
     @Override
     public Produto atualizarProduto(Produto produto, int id) throws SQLException {
 
-        Produto produtoOld = repository.findById(id);
-        if (produtoOld == null) {
-            throw new IllegalArgumentException();
-        }
-
         produto.setId(id);
-
-        produto = repository.update(produto);
-
-        if (produto == null) {
-            throw new RuntimeException("Erro de execução!");
-        }
+        produtoRepository.update(produto);
 
         return produto;
     }
@@ -53,12 +43,13 @@ public class ProdutoServiceImpl implements ProdutoService{
     @Override
     public boolean excluirProduto(int id) throws SQLException {
 
-        Produto produtoOld = repository.findById(id);
-        if (produtoOld == null) {
-            throw new RuntimeException("ProdutoNãoExisteException");
+        Produto produtoo = produtoRepository.findById(id);
+
+        if (produtoo == null) {
+            return false;
         }
 
-        repository.deleteById(id);
+        produtoRepository.deleteById(id);
         return true;
     }
 }

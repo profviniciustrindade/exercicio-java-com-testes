@@ -12,16 +12,15 @@ public class ProdutoRepositoryImpl implements ProdutoRepository{
     @Override
     public Produto save(Produto produto) throws SQLException {
 
-        String command = """
-                INSERT INTO
-                produto
+        String query = """
+                INSERT INTO produto
                 (nome,preco,quantidade,categoria)
                 VALUES
                 (?,?,?,?)
                 """;
 
         try (Connection conn = ConexaoBanco.conectar();
-             PreparedStatement stmt = conn.prepareStatement(command, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, produto.getNome());
             stmt.setDouble(2, produto.getPreco());
@@ -41,32 +40,36 @@ public class ProdutoRepositoryImpl implements ProdutoRepository{
     @Override
     public List<Produto> findAll() throws SQLException {
 
-        String query = """
-                SELECT  id
-                       ,nome
-                       ,preco
-                       ,quantidade
-                       ,categoria
-                FROM produto
-                WHERE 1=1
-                """;
-
         List<Produto> produtos = new ArrayList<>();
+        String query = """
+                SELECT   id
+                        ,nome
+                        ,preco
+                        ,quantidade
+                        ,categoria
+                FROM produto
+                WHERE 1 = 1
+                """;
 
         try (Connection conn = ConexaoBanco.conectar();
         PreparedStatement stmt = conn.prepareStatement(query)) {
 
             ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
 
+            while (rs.next()) {
                 int id = rs.getInt("id");
                 String nome = rs.getString("nome");
-                Double preco = rs.getDouble("preco");
+                double preco = rs.getDouble("preco");
                 int quantidade = rs.getInt("quantidade");
                 String categoria = rs.getString("categoria");
 
-                var produto = new Produto(id,nome,preco,quantidade,categoria);
-                produtos.add(produto);
+                produtos.add(new Produto(
+                        id,
+                        nome,
+                        preco,
+                        quantidade,
+                        categoria
+                ));
             }
         }
         return produtos;
@@ -76,11 +79,11 @@ public class ProdutoRepositoryImpl implements ProdutoRepository{
     public Produto findById(int id) throws SQLException {
 
         String query = """
-                SELECT  id
-                       ,nome
-                       ,preco
-                       ,quantidade
-                       ,categoria
+                SELECT   id
+                        ,nome
+                        ,preco
+                        ,quantidade
+                        ,categoria
                 FROM produto
                 WHERE id = ?
                 """;
@@ -92,30 +95,29 @@ public class ProdutoRepositoryImpl implements ProdutoRepository{
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                String nome = rs.getString("nome");
-                Double preco = rs.getDouble("preco");
-                int quantidade = rs.getInt("quantidade");
-                String categoria = rs.getString("categoria");
-
-                return new Produto(id,nome,preco,quantidade,categoria);
+                return new Produto(
+                        rs.getInt("id"),
+                        rs.getString("nome"),
+                        rs.getDouble("preco"),
+                        rs.getInt("quantidade"),
+                        rs.getString("categoria")
+                );
             }
-
         }
-
         return null;
     }
 
     @Override
     public Produto update(Produto produto) throws SQLException {
 
-        String command = """
+        String query = """
                 UPDATE produto
                 SET nome = ?, preco = ?, quantidade = ?, categoria = ?
                 WHERE id = ?
                 """;
 
         try (Connection conn = ConexaoBanco.conectar();
-        PreparedStatement stmt = conn.prepareStatement(command)) {
+        PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, produto.getNome());
             stmt.setDouble(2, produto.getPreco());
@@ -123,9 +125,6 @@ public class ProdutoRepositoryImpl implements ProdutoRepository{
             stmt.setString(4, produto.getCategoria());
             stmt.setInt(5, produto.getId());
             stmt.executeUpdate();
-
-        } catch (SQLException e) {
-            return null;
         }
 
         return produto;
@@ -134,18 +133,16 @@ public class ProdutoRepositoryImpl implements ProdutoRepository{
     @Override
     public void deleteById(int id) throws SQLException {
 
-        String command = """
-                DELETE FROM 
-                produto
-                WHERE 
-                id = ?
+        String query = """
+                DELETE FROM produto WHERE id = ?
                 """;
 
         try (Connection conn = ConexaoBanco.conectar();
-        PreparedStatement stmt = conn.prepareStatement(command)) {
+        PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setInt(1,id);
+            stmt.setInt(1, id);
             stmt.executeUpdate();
         }
     }
+
 }
